@@ -69,8 +69,8 @@ final class ListOfMovieTableViewCell: UITableViewCell {
         ])
     }
     
-    func setUpCell(movie: PopularMovieEntity) {
-        movieImageView.kf.setImage(with: URL(string: "https://image.tmdb.org/t/p/w200" + movie.imageURL))
+    func setUpCell(movie: ListOfMovieTableCellViewModel) {
+        movieImageView.kf.setImage(with: movie.imageURL)
         movieName.text = movie.title
         movieDescription.text = movie.overview
     }

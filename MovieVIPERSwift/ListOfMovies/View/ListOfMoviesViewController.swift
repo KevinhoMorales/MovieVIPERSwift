@@ -18,10 +18,11 @@ final class ListOfMoviesViewController: UIViewController {
         return tableView
     }()
     
-    var presenter: ListOfMoviesPresenter?
+    private let presenter: ListOfMoviesPresentable
     // MARK: - Private properties
     
-    init() {
+    init(presenter: ListOfMoviesPresentable) {
+        self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -31,7 +32,7 @@ final class ListOfMoviesViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        presenter?.onViewAppear()
+        presenter.onViewAppear()
         setUpView()
     }
     
@@ -45,6 +46,7 @@ final class ListOfMoviesViewController: UIViewController {
             tableView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
         tableView.dataSource = self
+        tableView.delegate = self
     }
     // MARK: - Actions
 }
@@ -52,23 +54,27 @@ final class ListOfMoviesViewController: UIViewController {
 // MARK: - Extensions here
 
 extension ListOfMoviesViewController: ListOfMoviesUI {
-    func update(movies: [PopularMovieEntity]) {
-        print("Data -> \(movies)")
+    func update(movies: [ListOfMovieTableCellViewModel]) {
         DispatchQueue.main.async { [ weak self] in
             self?.tableView.reloadData()
         }
     }
 }
 
-extension ListOfMoviesViewController: UITableViewDataSource {
+extension ListOfMoviesViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        presenter!.models.count
+        presenter.listOfMovieTableCellViewModel.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "LIST_OF_MOVIES_CELL_ID", for: indexPath) as! ListOfMovieTableViewCell
-        let movie = presenter!.models[indexPath.row]
+        let movie = presenter.listOfMovieTableCellViewModel[indexPath.row]
         cell.setUpCell(movie: movie)
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let movie = presenter.listOfMovieTableCellViewModel[indexPath.row]
+        print(movie.title)
     }
 }

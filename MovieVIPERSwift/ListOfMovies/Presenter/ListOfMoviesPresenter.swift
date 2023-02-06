@@ -7,24 +7,33 @@
 
 import Foundation
 
-protocol ListOfMoviesUI {
-    func update(movies: [PopularMovieEntity])
+protocol ListOfMoviesPresentable: AnyObject {
+    var ui: ListOfMoviesUI? { get }
+    var listOfMovieTableCellViewModel: [ListOfMovieTableCellViewModel] { get }
+    func onViewAppear()
 }
 
-final class ListOfMoviesPresenter {
-    var ui: ListOfMoviesUI?
+protocol ListOfMoviesUI: AnyObject {
+    func update(movies: [ListOfMovieTableCellViewModel])
+}
+
+final class ListOfMoviesPresenter: ListOfMoviesPresentable {
+    weak var ui: ListOfMoviesUI?
+    var listOfMovieTableCellViewModel: [ListOfMovieTableCellViewModel] = []
+
+    private let listOfMovieInteractor: ListOfMoviesInteractable
+    private let mapper: Mapper
     
-    private let listOfMovieInteractor: ListOfMoviesInteractor
-    var models: [PopularMovieEntity] = []
-    
-    init(listOfMovieInteractor: ListOfMoviesInteractor) {
+    init(listOfMovieInteractor: ListOfMoviesInteractable, mapper: Mapper = Mapper()) {
         self.listOfMovieInteractor = listOfMovieInteractor
+        self.mapper = mapper
     }
     
     func onViewAppear() {
         Task {
-            models = await listOfMovieInteractor.getListOfMovies().results
-            ui?.update(movies: models)
+            let models = await listOfMovieInteractor.getListOfMovies().results
+            listOfMovieTableCellViewModel = models.map(mapper.map(entity:))
+            ui?.update(movies: listOfMovieTableCellViewModel)
         }
     }
 }

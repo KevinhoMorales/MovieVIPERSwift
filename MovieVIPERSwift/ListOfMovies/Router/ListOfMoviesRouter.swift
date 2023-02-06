@@ -9,12 +9,18 @@ import UIKit
 
 final class ListOfMoviesRouter {
     func showListOfMovies(window: UIWindow?) {
-        let view = ListOfMoviesViewController()
+//        let interactor = ListOfMoviesInteractorMock() // MOCK
         let interactor = ListOfMoviesInteractor()
         let presenter = ListOfMoviesPresenter(listOfMovieInteractor: interactor)
+        let view = ListOfMoviesViewController(presenter: presenter)
         presenter.ui = view
-        view.presenter = presenter
-        window?.rootViewController = view
+        let nav = UINavigationController()
+        nav.pushViewController(view, animated: true)
+        window?.rootViewController = nav
         window?.makeKeyAndVisible()
+    }
+    
+    func showMovieDetail() {
+        
     }
 }
