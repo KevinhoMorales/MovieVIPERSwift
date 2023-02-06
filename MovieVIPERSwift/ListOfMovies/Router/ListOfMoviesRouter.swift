@@ -9,7 +9,7 @@ import UIKit
 
 final class ListOfMoviesRouter {
     func showListOfMovies(window: UIWindow?) {
-        let view = ListOfMoviesView()
+        let view = ListOfMoviesViewController()
         let interactor = ListOfMoviesInteractor()
         let presenter = ListOfMoviesPresenter(listOfMovieInteractor: interactor)
         presenter.ui = view
